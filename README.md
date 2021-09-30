@@ -1,7 +1,7 @@
 # acnh
 Animal Crossing New Horizons Collections
 
-## Before Running Server
+## Before Running Server First Time
 
 After running makemigrations and migrate, do the following from the Django manage.py shell:
 
