@@ -74,6 +74,9 @@ class Bug(models.Model):
     name = models.CharField(max_length=45)
     location = models.CharField(max_length=45)
     price = models.IntegerField()
+    @property
+    def img_name(self):
+        return str(self.id) + "-bug-img.png"
 
     # Relationships
     hours = models.ManyToManyField(Hour, related_name="bugs")
@@ -89,6 +92,9 @@ class Fish(models.Model):
     location = models.CharField(max_length=45)
     price = models.IntegerField()
     fin = models.BooleanField(default=False)
+    @property
+    def img_name(self):
+        return str(self.id) + "-fish-img.png"
 
     # Relationships
     shadow = models.ForeignKey(Shadow, related_name="fishes", on_delete=models.CASCADE)
@@ -103,6 +109,9 @@ class SeaCreature(models.Model):
     # Unique Fields
     name = models.CharField(max_length=45)
     price = models.IntegerField()
+    @property
+    def img_name(self):
+        return str(self.id) + "-sea-img.png"
 
     # Relationships
     shadow = models.ForeignKey(Shadow, related_name="sea_creatures", on_delete=models.CASCADE)
