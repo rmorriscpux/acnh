@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
+{% load mathfilters %}
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,14 +11,14 @@
 </head>
 <body>
     <div id="wrapper">
-        <div id="header">
+        <div class="flex-row" id="header">
             <ul id="nav_menu">
                 <li><a href="/bugs/">Bugs</a></li>
                 <li><a href="/fish/">Fish</a></li>
                 <li><a href="/sea_creatures/">Sea Creatures</a></li>
             </ul>
         </div>
-        <div id="selection">
+        <div class="flex-row" id="selection">
             <form id="selection_filter" action="/fish/" method="POST">
                 {% csrf_token %}
                 <div class="selection-form-item">
@@ -49,7 +50,16 @@
                 </div>
             </form>
         </div>
-        <div id="list">
+        <div class="flex-row" id="graphic_grid">
+            {% for fish in all_fishes %}
+                {% if forloop.counter|mod:5 == 1 %}<div class="graphic-column" id="graphic_col_{{ forloop.counter|intdiv:5 }}">{% endif %}
+                    <div class="graphic-box" id="fish_{{ fish.id }}">
+                        <img alt="{{ fish.name }}" src="{% static 'img/fish/'|add:fish.img_name %}" class="{% if fish in fishes %}active-img{% else %}inactive-img{% endif %}">
+                    </div>
+                {% if forloop.counter|mod:5 == 0 %}</div>{% endif %}
+            {% endfor %}
+        </div>
+        <div class="flex-row" id="list">
             <table id="list_table">
                 <tr class="header">
                     <th>Name</th>

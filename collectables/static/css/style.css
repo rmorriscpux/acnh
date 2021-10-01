@@ -7,8 +7,21 @@ div#wrapper{
     width: 1000px;
     display: block;
 }
+div.flex-row{
+    margin-top: 10px;
+}
 div.selection-form-item{
     display: inline-block;
+}
+div#graphic_grid{
+    display: flex;
+}
+div#graphic_grid div.graphic-column{
+    display: inline;
+}
+div#graphic_grid div.graphic-box{
+    display: block;
+    border: 2px solid black;
 }
 ul#nav_menu{
     list-style-type: none;
@@ -60,4 +73,10 @@ table#active_time td.active-hour{
 }
 table#active_time td.inactive-hour{
     background-color: transparent;
+}
+img.active-img{
+    opacity: 1;
+}
+img.inactive-img{
+    opacity: 0.3;
 }

@@ -38,6 +38,7 @@ def bugs(request):
         context['current_hour'] = ""
     context['months'] = Month.objects.all()
     context['hours'] = Hour.objects.all()
+    context['all_bugs'] = Bug.objects.all()
     return render(request, "bugs.html", context)
     
 def fish(request):
@@ -85,6 +86,7 @@ def fish(request):
     context['months'] = Month.objects.all()
     context['hours'] = Hour.objects.all()
     context['shadows'] = Shadow.objects.all()
+    context['all_fishes'] = Fish.objects.all()
     return render(request, "fish.html", context)
     
 def sea_creatures(request):
@@ -132,4 +134,5 @@ def sea_creatures(request):
     context['months'] = Month.objects.all()
     context['hours'] = Hour.objects.all()
     context['shadows'] = Shadow.objects.annotate(Count('sea_creatures')).filter(sea_creatures__count__gt=0)
+    context['all_sea_creatures'] = SeaCreature.objects.all()
     return render(request, "sea_creatures.html", context)
