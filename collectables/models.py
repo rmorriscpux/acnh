@@ -40,8 +40,8 @@ class Hour(models.Model):
 class MonthMgr(models.Manager):
     def all_southern(self):
         northern = self.all()
-        southern = northern[6:11]
-        southern.extend(northern[0:5])
+        southern = northern[6:12]
+        southern.extend(northern[0:6])
         return southern
 
     def get_southern(self, id):
@@ -52,7 +52,7 @@ class Month(models.Model):
     name = models.CharField(max_length=45)
     @property
     def short_name(self):
-        return self.name[0:2]
+        return self.name[0:3]
     @property
     def initial(self):
         return self.name[0]

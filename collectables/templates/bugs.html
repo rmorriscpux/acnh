@@ -7,6 +7,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">var critterType = "Bug";</script>
+    <script type="text/javascript" src="{% static 'js/info-tooltip.js' %}"></script>
     <title>Bugs</title>
 </head>
 <body>
@@ -46,7 +49,8 @@
         {% for bug in all_bugs %}
             {% if forloop.counter|mod:5 == 1 %}<div class="graphic-column" id="graphic_col_{{ forloop.counter|intdiv:5 }}">{% endif %}
                 <div class="graphic-box" id="bug_{{ bug.id }}">
-                    <img alt="{{ bug.name }}" src="{% static 'img/bugs/'|add:bug.img_name %}" class="{% if bug in bugs %}active-img{% else %}inactive-img{% endif %}">
+                    <img alt="{{ bug.name }}" src="{% static 'img/bugs/'|add:bug.img_name %}" class="critter {% if bug in bugs %}active-img{% else %}inactive-img{% endif %}">
+                    <span class="critter-tooltip"></span>
                 </div>
             {% if forloop.counter|mod:5 == 0 %}</div>{% endif %}
         {% endfor %}

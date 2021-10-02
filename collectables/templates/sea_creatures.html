@@ -7,6 +7,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">var critterType = "Fish";</script>
+    <script type="text/javascript" src="{% static 'js/info-tooltip.js' %}"></script>
     <title>Sea Creatures</title>
 </head>
 <body>
@@ -51,13 +54,14 @@
             </form>
         </div>
         <div class="flex-row" id="graphic_grid">
-            {% for creature in all_sea_creatures %}
-                {% if forloop.counter|mod:5 == 1 %}<div class="graphic-column" id="graphic_col_{{ forloop.counter|intdiv:5 }}">{% endif %}
-                    <div class="graphic-box" id="sea_creature_{{ creature.id }}">
-                        <img alt="{{ creature.name }}" src="{% static 'img/sea_creatures/'|add:creature.img_name %}" class="{% if creature in sea_creatures %}active-img{% else %}inactive-img{% endif %}">
-                    </div>
-                {% if forloop.counter|mod:5 == 0 %}</div>{% endif %}
-            {% endfor %}
+        {% for creature in all_sea_creatures %}
+            {% if forloop.counter|mod:5 == 1 %}<div class="graphic-column" id="graphic_col_{{ forloop.counter|intdiv:5 }}">{% endif %}
+                <div class="graphic-box" id="sea_creature_{{ creature.id }}">
+                    <img alt="{{ creature.name }}" src="{% static 'img/sea_creatures/'|add:creature.img_name %}" class="critter {% if creature in sea_creatures %}active-img{% else %}inactive-img{% endif %}">
+                    <span class="critter-tooltip"></span>
+                </div>
+            {% if forloop.counter|mod:5 == 0 %}</div>{% endif %}
+        {% endfor %}
         </div>
         <div class="flex-row" id="list">
             <table id="list_table">

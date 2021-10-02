@@ -22,6 +22,30 @@ div#graphic_grid div.graphic-column{
 div#graphic_grid div.graphic-box{
     display: block;
     border: 2px solid black;
+    position: relative;
+}
+div.graphic-box span.critter-tooltip{
+    display: none;
+    background-color: #000000;
+    color: #ffffff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    top: 110%;
+    left: 0%;
+    width: max-content;
+}
+div.graphic-box span.critter-tooltip::after{
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 32px;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #000000 transparent;
 }
 ul#nav_menu{
     list-style-type: none;

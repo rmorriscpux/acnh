@@ -1,10 +1,101 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, HttpResponse
 from django.db.models import Count
 from .models import Bug, Fish, SeaCreature, Month, Hour, Shadow
 
+# Wrap function for getting the hours available range(s) for critters.
+def hour_range(critter):
+    # For all hours, return an "All Day" string.
+    if len(critter.hours.all()) == 24:
+        return "All Day"
+
+    # Get the first range.
+    start = critter.hours.all()[0]
+    end = Hour.objects.get(time=(start.time+1)%24)
+    count = 1
+    # Count the amount of consecutive hours.
+    while end in critter.hours.all():
+        end = Hour.objects.get(time=(end.time+1)%24)
+        count += 1
+    
+    temp_count = count # There may be two consecutive ranges, so we may need this amount later.
+
+    # Overnight Wraparound Check
+    if start.time == 0 and critter.hours.all()[len(critter.hours.all())-1].time == 23:
+        start = Hour.objects.get(time=23)
+        count += 1
+        while Hour.objects.get(time=(start.time-1)%24) in critter.hours.all() and count < len(critter.hours.all()):
+            start = Hour.objects.get(time=(start.time-1)%24)
+            count += 1
+
+    out_str = f"{start.time_am_pm}-{end.time_am_pm}"
+
+    # Second Range Check
+    if count < len(critter.hours.all()):
+        start = critter.hours.all()[temp_count]
+        end = Hour.objects.get(time=(start.time+1)%24)
+        # Count the amount of consecutive hours.
+        while end in critter.hours.all() and count < len(critter.months.all()):
+            end = Hour.objects.get(time=(end.time+1)%24)
+            count += 1
+
+        out_str = out_str + f", {start.time_am_pm}-{end.time_am_pm}"
+
+    return out_str
+
+# Wrap function for getting the months available range(s) for critters.
+def month_range(critter):
+    # For all months, return an "All Year" string.
+    if len(critter.months.all()) == 12:
+        return "All Year"
+
+    # Get the first range.
+    start = critter.months.all()[0]
+    end = start
+    count = 1
+    while Month.objects.get(id=(end.id%12)+1) in critter.months.all():
+        end = Month.objects.get(id=(end.id%12)+1)
+        count += 1
+
+    temp_count = count # There may be two consecutive ranges, so we may need this amount later.
+
+    # Year Wraparound Check
+    if start.name == "January" and critter.months.all()[len(critter.months.all())-1].name == "December":
+        start = Month.objects.get(name="December")
+        count += 1
+        while Month.objects.get(id=(start.id-1)) in critter.months.all() and count < len(critter.months.all()):
+            start = Month.objects.get(id=(start.id-1))
+            count += 1
+
+    if start == end:
+        out_str = f"{start.short_name}"
+    else:
+        out_str = f"{start.short_name}-{end.short_name}"
+
+    # Second Range Check
+    if count < len(critter.months.all()):
+        start = critter.months.all()[temp_count]
+        end = start
+        count += 1
+        while Month.objects.get(id=(end.id%12)+1) in critter.months.all() and count < len(critter.months.all()):
+            end = Month.objects.get(id=(end.id%12)+1)
+            count += 1
+        
+        if start == end:
+            out_str = out_str + f", {start.short_name}"
+        else:
+            out_str = out_str + f", {start.short_name}-{end.short_name}"
+
+    return out_str
+
+# index
+# Path: /
+# Main Page
 def index(request):
     return render(request, "index.html")
 
+# bugs
+# Path: /bugs/
+# Bug List Page
 def bugs(request):
     context = {}
     if request.method == "POST":
@@ -41,6 +132,9 @@ def bugs(request):
     context['all_bugs'] = Bug.objects.all()
     return render(request, "bugs.html", context)
     
+# fish
+# Path: /fish/
+# Fish List Page
 def fish(request):
     context = {}
     if request.method == "POST":
@@ -89,6 +183,9 @@ def fish(request):
     context['all_fishes'] = Fish.objects.all()
     return render(request, "fish.html", context)
     
+# sea_creatures
+# Path: /sea_creatures/
+# Sea Creatures List Page
 def sea_creatures(request):
     context = {}
     if request.method == "POST":
@@ -136,3 +233,127 @@ def sea_creatures(request):
     context['shadows'] = Shadow.objects.annotate(Count('sea_creatures')).filter(sea_creatures__count__gt=0)
     context['all_sea_creatures'] = SeaCreature.objects.all()
     return render(request, "sea_creatures.html", context)
+
+# bugs_info
+# Path: /bugs/critter_info/
+# AJAX Get information for a specific bug.
+def bugs_info(request):
+    if request.method != "POST":
+        return redirect('/bugs/')
+    if 'name' not in request.POST:
+        return redirect('/bugs/')
+
+    try:
+        selected_bug = Bug.objects.get(name=request.POST['name'])
+    except:
+        return HttpResponse("Bug Not Found.")
+
+    out_html = f'''
+    <table class="critter_info">
+        <tr>
+            <th colspan="2">{selected_bug.name}</th>
+        </tr>
+        <tr>
+            <td class="category">Location</td>
+            <td class="value">{selected_bug.location}</td>
+        </tr>
+        <tr>
+            <td class="category">Value</td>
+            <td class="value">{selected_bug.price}</td>
+        </tr>
+        <tr>
+            <td class="category">Hours</td>
+            <td class="value">{hour_range(selected_bug)}</td>
+        </tr>
+        <tr>
+            <td class="category">Months</td>
+            <td class="value">{month_range(selected_bug)}</td>
+        </tr>
+    </table>
+    '''
+
+    return HttpResponse(out_html)
+
+# fish_info
+# Path: /fish/critter_info/
+# AJAX Get information for a specific fish.
+def fish_info(request):
+    if request.method != "POST":
+        return redirect('/fish/')
+    if 'name' not in request.POST:
+        return redirect('/fish/')
+
+    try:
+        selected_fish = Fish.objects.get(name=request.POST['name'])
+    except:
+        return HttpResponse("Fish Not Found.")
+
+    out_html = f'''
+    <table class="critter_info">
+        <tr>
+            <th colspan="2">{selected_fish.name}</th>
+        </tr>
+        <tr>
+            <td class="category">Location</td>
+            <td class="value">{selected_fish.location}</td>
+        </tr>
+        <tr>
+            <td class="category">Shadow</td>
+            <td class="value">{selected_fish.shadow.size}</td>
+        </tr>
+        <tr>
+            <td class="category">Value</td>
+            <td class="value">{selected_fish.price}</td>
+        </tr>
+        <tr>
+            <td class="category">Hours</td>
+            <td class="value">{hour_range(selected_fish)}</td>
+        </tr>
+        <tr>
+            <td class="category">Months</td>
+            <td class="value">{month_range(selected_fish)}</td>
+        </tr>
+    </table>
+    '''
+
+    return HttpResponse(out_html)
+
+# sea_creatues_info
+# Path: /sea_creatures/critter_info/
+# AJAX Get information for a specific bug.
+def sea_creatures_info(request):
+    if request.method != "POST":
+        return redirect('/sea_creatures/')
+    if 'name' not in request.POST:
+        return redirect('/sea_creatures/')
+
+    try:
+        selected_creature = SeaCreature.objects.get(name=request.POST['name'])
+    except:
+        return HttpResponse("Sea Creature Not Found.")
+
+    out_html = f'''
+    <table class="critter_info">
+        <tr>
+            <th colspan="2">{selected_creature.name}</th>
+        </tr>
+        <tr>
+            <td class="category">Shadow</td>
+            <td class="value">{selected_creature.shadow.size}</td>
+        </tr>
+        <tr>
+            <td class="category">Value</td>
+            <td class="value">{selected_creature.price}</td>
+        </tr>
+        <tr>
+            <td class="category">Hours</td>
+            <td class="value">{hour_range(selected_creature)}</td>
+        </tr>
+        <tr>
+            <td class="category">Months</td>
+            <td class="value">{month_range(selected_creature)}</td>
+        </tr>
+    </table>
+    '''
+
+    return HttpResponse(out_html)
