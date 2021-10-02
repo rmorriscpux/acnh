@@ -34,7 +34,7 @@ def hour_range(critter):
         start = critter.hours.all()[temp_count]
         end = Hour.objects.get(time=(start.time+1)%24)
         # Count the amount of consecutive hours.
-        while end in critter.hours.all() and count < len(critter.months.all()):
+        while (end in critter.hours.all()) and count < len(critter.hours.all()):
             end = Hour.objects.get(time=(end.time+1)%24)
             count += 1
 
