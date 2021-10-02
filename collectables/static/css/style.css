@@ -98,6 +98,14 @@ table#active_time td.active-hour{
 table#active_time td.inactive-hour{
     background-color: transparent;
 }
+table.critter_info{
+    border: 1px solid #ffffff;
+    border-collapse: collapse;
+}
+table.critter_info th, table.critter_info td{
+    border: 1px solid #ffffff;
+    padding: 3px;
+}
 img.active-img{
     opacity: 1;
 }
