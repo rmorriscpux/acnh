@@ -49,6 +49,7 @@ class MonthMgr(models.Manager):
 
 class Month(models.Model):
     # Unique Fields
+    number = models.IntegerField()
     name = models.CharField(max_length=45)
     @property
     def short_name(self):

@@ -52,8 +52,8 @@ def month_range(critter):
     start = critter.months.all()[0]
     end = start
     count = 1
-    while Month.objects.get(id=(end.id%12)+1) in critter.months.all():
-        end = Month.objects.get(id=(end.id%12)+1)
+    while Month.objects.get(number=(end.number%12)+1) in critter.months.all():
+        end = Month.objects.get(number=(end.number%12)+1)
         count += 1
 
     temp_count = count # There may be two consecutive ranges, so we may need this amount later.
@@ -62,8 +62,8 @@ def month_range(critter):
     if start.name == "January" and critter.months.all()[len(critter.months.all())-1].name == "December":
         start = Month.objects.get(name="December")
         count += 1
-        while Month.objects.get(id=(start.id-1)) in critter.months.all() and count < len(critter.months.all()):
-            start = Month.objects.get(id=(start.id-1))
+        while Month.objects.get(number=(start.number-1)) in critter.months.all() and count < len(critter.months.all()):
+            start = Month.objects.get(number=(start.number-1))
             count += 1
 
     if start == end:
@@ -76,8 +76,8 @@ def month_range(critter):
         start = critter.months.all()[temp_count]
         end = start
         count += 1
-        while Month.objects.get(id=(end.id%12)+1) in critter.months.all() and count < len(critter.months.all()):
-            end = Month.objects.get(id=(end.id%12)+1)
+        while Month.objects.get(number=(end.number%12)+1) in critter.months.all() and count < len(critter.months.all()):
+            end = Month.objects.get(number=(end.number%12)+1)
             count += 1
         
         if start == end:
