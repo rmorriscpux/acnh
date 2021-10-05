@@ -37,15 +37,15 @@ class Hour(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-class MonthMgr(models.Manager):
-    def all_southern(self):
-        northern = self.all()
-        southern = northern[6:12]
-        southern.extend(northern[0:6])
-        return southern
+# class MonthMgr(models.Manager):
+#     def all_southern(self):
+#         northern = self.all()
+#         southern = northern[6:12]
+#         southern.extend(northern[0:6])
+#         return southern
 
-    def get_southern(self, id):
-        return self.get(id=(id+6)%12)
+#     def get_southern(self, number):
+#         return self.get(number=(number+6)%12)
 
 class Month(models.Model):
     # Unique Fields
@@ -59,6 +59,14 @@ class Month(models.Model):
         return self.name[0]
 
     # Relationships
+    # Same table one-to-one relationship. For use in getting southern hemisphere month ranges.
+    @property
+    def southern(self):
+        try:
+            southern_month = Month.objects.get(number=(self.number+5)%12+1)
+        except:
+            return None
+        return southern_month
     # bugs
     # fishes
     # sea_creatures
@@ -68,7 +76,7 @@ class Month(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     # Manager
-    objects = MonthMgr()
+    # objects = MonthMgr()
 
 class Bug(models.Model):
     # Unique Fields
