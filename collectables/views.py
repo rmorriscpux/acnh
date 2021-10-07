@@ -43,7 +43,7 @@ def hour_range(critter):
     return out_str
 
 # Wrap function for getting the months available range(s) for critters.
-def month_range(critter):
+def month_range(critter, is_southern=False):
     # For all months, return an "All Year" string.
     if len(critter.months.all()) == 12:
         return "All Year"
@@ -67,9 +67,9 @@ def month_range(critter):
             count += 1
 
     if start == end:
-        out_str = f"{start.short_name}"
+        out_str = f"{start.southern.short_name}" if is_southern else f"{start.short_name}"
     else:
-        out_str = f"{start.short_name}-{end.short_name}"
+        out_str = f"{start.southern.short_name}-{end.southern.short_name}" if is_southern else f"{start.short_name}-{end.short_name}"
 
     # Second Range Check
     if count < len(critter.months.all()):
@@ -81,9 +81,9 @@ def month_range(critter):
             count += 1
         
         if start == end:
-            out_str = out_str + f", {start.short_name}"
+            out_str = out_str + f", {start.southern.short_name}" if is_southern else out_str + f", {start.short_name}"
         else:
-            out_str = out_str + f", {start.short_name}-{end.short_name}"
+            out_str = out_str + f", {start.southern.short_name}-{end.southern.short_name}" if is_southern else out_str + f", {start.short_name}-{end.short_name}"
 
     return out_str
 
@@ -248,6 +248,8 @@ def bugs_info(request):
     except:
         return HttpResponse("Bug Not Found.")
 
+    is_southern =  "southern" in request.POST
+
     out_html = f'''
     <table class="critter_info">
         <tr>
@@ -267,7 +269,7 @@ def bugs_info(request):
         </tr>
         <tr>
             <td class="category">Months</td>
-            <td class="value">{month_range(selected_bug)}</td>
+            <td class="value">{month_range(selected_bug, is_southern)}</td>
         </tr>
     </table>
     '''
@@ -287,6 +289,8 @@ def fish_info(request):
         selected_fish = Fish.objects.get(name=request.POST['name'])
     except:
         return HttpResponse("Fish Not Found.")
+
+    is_southern = "southern" in request.POST
 
     out_html = f'''
     <table class="critter_info">
@@ -311,7 +315,7 @@ def fish_info(request):
         </tr>
         <tr>
             <td class="category">Months</td>
-            <td class="value">{month_range(selected_fish)}</td>
+            <td class="value">{month_range(selected_fish, is_southern)}</td>
         </tr>
     </table>
     '''
@@ -332,6 +336,8 @@ def sea_creatures_info(request):
     except:
         return HttpResponse("Sea Creature Not Found.")
 
+    is_southern = "southern" in request.POST
+
     out_html = f'''
     <table class="critter_info">
         <tr>
@@ -351,7 +357,7 @@ def sea_creatures_info(request):
         </tr>
         <tr>
             <td class="category">Months</td>
-            <td class="value">{month_range(selected_creature)}</td>
+            <td class="value">{month_range(selected_creature, is_southern)}</td>
         </tr>
     </table>
     '''
