@@ -6,7 +6,8 @@ $(document).ready(function(){
         // Pull critter info from the database and place it in the associated tooltip span.
         tooltip.load("./critter_info/", {
             csrfmiddlewaretoken : $("input[name='csrfmiddlewaretoken']").val(), 
-            name : image.attr('alt')
+            name : image.attr('alt'),
+            hemisphere : $("#hemisphere").val()
         });
         tooltip.show();
     }, function(){

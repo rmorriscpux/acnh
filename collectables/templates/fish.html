@@ -48,11 +48,16 @@
                     </select>
                 </div>
                 <div class="selection-form-item">
+                    <label for="southern_hemi">SOUTHERN</label><br>
+                    <input type="checkbox" id="southern_hemi" name="southern" value="southern"{% if hemisphere == "southern" %} checked{% endif %}>
+                </div>
+                <div class="selection-form-item">
                     <button type="submit">Submit</button>
                 </div>
             </form>
         </div>
         <div class="flex-row" id="graphic_grid">
+            <input type="hidden" id="hemisphere" value="{{ hemisphere }}">
         {% for fish in all_fishes %}
             {% if forloop.counter|mod:5 == 1 %}<div class="graphic-column" id="graphic_col_{{ forloop.counter|intdiv:5 }}">{% endif %}
                 <div class="graphic-box" id="fish_{{ fish.id }}">
@@ -80,7 +85,8 @@
                     <td class="list">{{ fish.price }}</td>
                     <td class="list">
                         {% for month in months %}
-                        <span class="{% if month in fish.months.all %}avail-month{% else %}unavail-month{% endif %}">{{ month.initial }}</span>
+                        {% if hemisphere == "southern" %}<span class="{% if month.southern in fish.months.all %}avail-month{% else %}unavail-month{% endif %}">{{ month.initial }}</span>
+                        {% else %}<span class="{% if month in fish.months.all %}avail-month{% else %}unavail-month{% endif %}">{{ month.initial }}</span>{% endif %}
                         {% endfor %}
                     </td>
                     <td>

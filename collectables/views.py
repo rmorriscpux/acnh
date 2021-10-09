@@ -99,11 +99,15 @@ def index(request):
 def bugs(request):
     context = {}
     if request.method == "POST":
+        hemisphere = "southern" if "southern" in request.POST else "northern"
         # Get all the bugs for a selected month, or all if no month was selected.
         if 'selected_month' in request.POST:
             selected_month = Month.objects.filter(name=request.POST['selected_month'])
             if selected_month:
-                month_bugs = selected_month[0].bugs.all()
+                if hemisphere == "northern":
+                    month_bugs = selected_month[0].bugs.all()
+                else: # Southern
+                    month_bugs = selected_month[0].southern.bugs.all()
                 context['current_month'] = request.POST['selected_month']
             else:
                 month_bugs = Bug.objects.all()
@@ -123,8 +127,10 @@ def bugs(request):
             hour_bugs = Bug.objects.all()
         # Put them together.
         context['bugs'] = month_bugs.intersection(hour_bugs)
+        context['hemisphere'] = hemisphere
     else: # Grab all the bugs in the list.
         context['bugs'] = Bug.objects.all()
+        context['hemisphere'] = "northern"
         context['current_month'] = ""
         context['current_hour'] = ""
     context['months'] = Month.objects.all()
@@ -138,6 +144,7 @@ def bugs(request):
 def fish(request):
     context = {}
     if request.method == "POST":
+        hemisphere = "southern" if "southern" in request.POST else "northern"
         # Get all the fish for a selected shadow, or all if no shadow was selected.
         if 'selected_shadow' in request.POST:
             selected_shadow = Shadow.objects.filter(size=request.POST['selected_shadow'])
@@ -149,11 +156,14 @@ def fish(request):
                 context['current_shadow'] = ""
         else:
             shadow_fishes = Fish.objects.all()
-        # Get all the bugs for a selected month, or all if no month was selected.
+        # Get all the fish for a selected month, or all if no month was selected.
         if 'selected_month' in request.POST:
             selected_month = Month.objects.filter(name=request.POST['selected_month'])
             if selected_month:
-                month_fishes = selected_month[0].fishes.all()
+                if hemisphere == "northern":
+                    month_fishes = selected_month[0].fishes.all()
+                else: # Southern
+                    month_fishes = selected_month[0].southern.fishes.all()
                 context['current_month'] = request.POST['selected_month']
             else:
                 month_fishes = Fish.objects.all()
@@ -173,8 +183,10 @@ def fish(request):
             hour_fishes = Fish.objects.all()
         # Put them together.
         context['fishes'] = month_fishes.intersection(hour_fishes, shadow_fishes)
+        context['hemisphere'] = hemisphere
     else: # Grab all the fish in the list.
         context['fishes'] = Fish.objects.all()
+        context['hemisphere'] = "northern"
         context['current_month'] = ""
         context['current_hour'] = ""
     context['months'] = Month.objects.all()
@@ -189,6 +201,7 @@ def fish(request):
 def sea_creatures(request):
     context = {}
     if request.method == "POST":
+        hemisphere = "southern" if "southern" in request.POST else "northern"
         # Get all the sea creatures for a selected shadow, or all if no shadow was selected.
         if 'selected_shadow' in request.POST:
             selected_shadow = Shadow.objects.filter(size=request.POST['selected_shadow'])
@@ -200,11 +213,14 @@ def sea_creatures(request):
                 context['current_shadow'] = ""
         else:
             shadow_creatures = SeaCreature.objects.all()
-        # Get all the bugs for a selected month, or all if no month was selected.
+        # Get all the sea creatures for a selected month, or all if no month was selected.
         if 'selected_month' in request.POST:
             selected_month = Month.objects.filter(name=request.POST['selected_month'])
             if selected_month:
-                month_creatures = selected_month[0].sea_creatures.all()
+                if hemisphere == "northern":
+                    month_creatures = selected_month[0].sea_creatures.all()
+                else: # Southern
+                    month_creatures = selected_month[0].southern.sea_creatures.all()
                 context['current_month'] = request.POST['selected_month']
             else:
                 month_creatures = SeaCreature.objects.all()
@@ -224,8 +240,10 @@ def sea_creatures(request):
             hour_creatures = SeaCreature.objects.all()
         # Put them together.
         context['sea_creatures'] = month_creatures.intersection(hour_creatures, shadow_creatures)
+        context['hemisphere'] = hemisphere
     else: # Grab all the sea creatures in the list.
         context['sea_creatures'] = SeaCreature.objects.all()
+        context['hemisphere'] = "northern"
         context['current_month'] = ""
         context['current_hour'] = ""
     context['months'] = Month.objects.all()
@@ -248,7 +266,7 @@ def bugs_info(request):
     except:
         return HttpResponse("Bug Not Found.")
 
-    is_southern =  "southern" in request.POST
+    is_southern =  request.POST['hemisphere'] == "southern"
 
     out_html = f'''
     <table class="critter_info">
@@ -290,7 +308,7 @@ def fish_info(request):
     except:
         return HttpResponse("Fish Not Found.")
 
-    is_southern = "southern" in request.POST
+    is_southern = request.POST['hemisphere'] == "southern"
 
     out_html = f'''
     <table class="critter_info">
@@ -324,7 +342,7 @@ def fish_info(request):
 
 # sea_creatues_info
 # Path: /sea_creatures/critter_info/
-# AJAX Get information for a specific bug.
+# AJAX Get information for a specific sea creature.
 def sea_creatures_info(request):
     if request.method != "POST":
         return redirect('/sea_creatures/')
@@ -336,7 +354,7 @@ def sea_creatures_info(request):
     except:
         return HttpResponse("Sea Creature Not Found.")
 
-    is_southern = "southern" in request.POST
+    is_southern = request.POST['hemisphere'] == "southern"
 
     out_html = f'''
     <table class="critter_info">
