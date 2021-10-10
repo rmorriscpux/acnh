@@ -309,6 +309,7 @@ def fish_info(request):
         return HttpResponse("Fish Not Found.")
 
     is_southern = request.POST['hemisphere'] == "southern"
+    fin_text = " (Fin)" if selected_fish.fin else ""
 
     out_html = f'''
     <table class="critter_info">
@@ -321,7 +322,7 @@ def fish_info(request):
         </tr>
         <tr>
             <td class="category">Shadow</td>
-            <td class="value">{selected_fish.shadow.size}</td>
+            <td class="value">{selected_fish.shadow.size}{fin_text}</td>
         </tr>
         <tr>
             <td class="category">Value</td>
